@@ -17,3 +17,5 @@ tsconfig.tsbuildinfo
 .vercel/
 .firebase/
 firebase-debug.log*
+
+.dorms-check/

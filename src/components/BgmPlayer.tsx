@@ -39,6 +39,8 @@ export default function BgmPlayer({ ref }: { ref?: React.Ref<BgmHandle> }) {
   const playerRef = useRef<YouTubePlayer | null>(null);
   /* 플레이어가 준비되기 전에 인트로 버튼을 누른 경우를 기억해 둡니다. */
   const wantsPlayRef = useRef(false);
+  const selectedTrackRef = useRef(0);
+  const volumeRef = useRef(DEFAULT_VOLUME);
   const blockTimerRef = useRef<number | null>(null);
   /* 지금 플레이어에 올라가 있는 영상입니다. 같은 영상 안의 곡이면 다시 불러오지 않고 위치만 옮깁니다. */
   const loadedVideoRef = useRef(bgmTracks[0]?.videoId ?? "");
@@ -70,8 +72,18 @@ export default function BgmPlayer({ ref }: { ref?: React.Ref<BgmHandle> }) {
           },
           events: {
             onReady: () => {
-              player?.setVolume(DEFAULT_VOLUME);
-              if (wantsPlayRef.current) player?.playVideo();
+              if (cancelled || !player) return;
+              // YouTube adds playback methods only after this event.
+              playerRef.current = player;
+              player.setVolume(volumeRef.current);
+              const track = bgmTracks[selectedTrackRef.current];
+              if (wantsPlayRef.current && track.videoId !== loadedVideoRef.current) {
+                loadedVideoRef.current = track.videoId;
+                player.loadVideoById({ videoId: track.videoId, startSeconds: track.startAt ?? 0 });
+              } else if (wantsPlayRef.current) {
+                if (track.startAt) player.seekTo(track.startAt, true);
+                player.playVideo();
+              }
             },
             onStateChange: event => {
               if (event.data === PLAYER_STATE.playing) {
@@ -80,12 +92,15 @@ export default function BgmPlayer({ ref }: { ref?: React.Ref<BgmHandle> }) {
               } else if (event.data === PLAYER_STATE.paused) {
                 setPlaying(false);
               } else if (event.data === PLAYER_STATE.ended) {
-                /* 영상이 끝났습니다. 처음 곡으로 돌아가 다시 틉니다. */
-                setIndex(0);
-                loadedVideoRef.current = bgmTracks[0].videoId;
+                /* 마지막 영상까지 재생하면 목록의 처음으로 돌아갑니다. */
+                const last = bgmTracks.map(track => track.videoId).lastIndexOf(loadedVideoRef.current);
+                const next = (last + 1) % bgmTracks.length;
+                selectedTrackRef.current = next;
+                setIndex(next);
+                loadedVideoRef.current = bgmTracks[next].videoId;
                 playerRef.current?.loadVideoById({
-                  videoId: bgmTracks[0].videoId,
-                  startSeconds: bgmTracks[0].startAt ?? 0
+                  videoId: bgmTracks[next].videoId,
+                  startSeconds: bgmTracks[next].startAt ?? 0
                 });
               }
             },
@@ -97,7 +112,7 @@ export default function BgmPlayer({ ref }: { ref?: React.Ref<BgmHandle> }) {
           }
         });
 
-        playerRef.current = player;
+        // Keep the player inaccessible to controls until onReady.
       })
       .catch(() => setFailed(true));
 
@@ -180,8 +195,12 @@ export default function BgmPlayer({ ref }: { ref?: React.Ref<BgmHandle> }) {
 
   const selectTrack = (next: number) => {
     const track = bgmTracks[next];
+    selectedTrackRef.current = next;
+    wantsPlayRef.current = true;
     setIndex(next);
     setBlocked(false);
+    setFailed(false);
+    setErrorCode(null);
 
     const player = playerRef.current;
     if (!player) return;
@@ -211,6 +230,7 @@ export default function BgmPlayer({ ref }: { ref?: React.Ref<BgmHandle> }) {
   };
 
   const changeVolume = (next: number) => {
+    volumeRef.current = next;
     setVolume(next);
     const player = playerRef.current;
     if (!player) return;
