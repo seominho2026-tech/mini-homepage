@@ -1,22 +1,26 @@
 rules_version = '2';
 
-/* 미요Lab 한줄평(방명록) 보안 규칙입니다.
-   로그인 없이 누구나 한 줄을 남길 수 있고, 남기면 바로 공개됩니다.
-   대신 아래 조건으로 형태를 제한해 아무 데이터나 넣지 못하게 막습니다.
-
-   - 필드는 author, text, approved, createdAt 네 개만 허용
-   - 이름 20자, 본문 100자 제한
-   - createdAt 은 클라이언트가 정할 수 없고 서버 시간만 허용
-   - 한 번 쓴 글은 클라이언트에서 수정·삭제 불가 (콘솔에서만 삭제)
-
-   승인제로 바꾸려면: read 조건을 resource.data.approved == true 로 바꾸고,
-   create 조건의 approved == true 를 approved == false 로 바꾸면 됩니다. */
+/* Public entries are readable by everyone. New entries carry the Firebase
+   anonymous owner's UID. Only that UID may delete; updates are denied.
+   Legacy entries without ownerId remain readable and cannot be claimed.
+   Each entry has bounded author/text/title, a server timestamp, and where
+   applicable an HTTPS link and/or a compressed JPEG. */
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAuthenticated() { return request.auth != null; }
+    function validOwner(data) {
+      return isAuthenticated() && data.ownerId is string
+        && data.ownerId.size() <= 128 && data.ownerId == request.auth.uid;
+    }
+    function isOwner() {
+      return isAuthenticated() && resource.data.keys().hasAll(['ownerId'])
+        && resource.data.ownerId == request.auth.uid;
+    }
     match /guestbook/{entryId} {
       allow read: if true;
 
-      allow create: if request.resource.data.keys().hasOnly(['author', 'text', 'approved', 'createdAt'])
+      allow create: if request.resource.data.keys().hasOnly(['author', 'text', 'approved', 'createdAt', 'ownerId'])
+        && validOwner(request.resource.data)
         && request.resource.data.author is string
         && request.resource.data.author.size() >= 1
         && request.resource.data.author.size() <= 20
@@ -26,7 +30,8 @@ service cloud.firestore {
         && request.resource.data.approved == true
         && request.resource.data.createdAt == request.time;
 
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isOwner();
     }
 
     /* 미니홈피 왼쪽 위 TODAY / TOTAL 방문 수입니다. 문서 하나만 씁니다.
@@ -39,9 +44,9 @@ service cloud.firestore {
        조작하더라도 today 가 1로 리셋되는 정도이고 total 은 영향받지 않습니다. */
 
     // Public posts: author/title/text plus a link or a compressed JPEG.
-    // Existing posts are immutable to visitors, including their author.
+    // Authors may delete their own entries. Updating or claiming entries is denied.
     function validPostBase(data) {
-      return data.author is string && data.author.size() >= 1 && data.author.size() <= 20
+      return validOwner(data) && data.author is string && data.author.size() >= 1 && data.author.size() <= 20
         && data.author.matches('.*[^ ].*')
         && data.title is string && data.title.size() >= 1 && data.title.size() <= 80
         && data.title.matches('.*[^ ].*')
@@ -49,28 +54,45 @@ service cloud.firestore {
         && data.createdAt == request.time;
     }
     function validBoardPost(data) {
-      return data.keys().hasAll(['author', 'title', 'text', 'href', 'createdAt'])
-        && data.keys().hasOnly(['author', 'title', 'text', 'href', 'createdAt'])
+      return data.keys().hasAll(['author', 'title', 'text', 'href', 'createdAt', 'ownerId'])
+        && data.keys().hasOnly(['author', 'title', 'text', 'href', 'createdAt', 'ownerId'])
         && validPostBase(data) && data.text.size() >= 1
         && data.href is string && data.href.size() <= 2048
         && (data.href == '' || data.href.matches('https://[^/ ?#@]+[.][^/ ?#@]+.*'));
     }
     function validPhotoPost(data) {
-      return data.keys().hasAll(['author', 'title', 'text', 'imageData', 'createdAt'])
-        && data.keys().hasOnly(['author', 'title', 'text', 'imageData', 'createdAt'])
+      return data.keys().hasAll(['author', 'title', 'text', 'imageData', 'createdAt', 'ownerId'])
+        && data.keys().hasOnly(['author', 'title', 'text', 'imageData', 'createdAt', 'ownerId'])
         && validPostBase(data)
         && data.imageData is string && data.imageData.size() <= 450000
         && data.imageData.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+');
     }
+    function validLabPost(data) {
+      return data.keys().hasAll(['author', 'title', 'text', 'href', 'imageData', 'createdAt', 'ownerId'])
+        && data.keys().hasOnly(['author', 'title', 'text', 'href', 'imageData', 'createdAt', 'ownerId'])
+        && validPostBase(data) && data.text.size() >= 1
+        && data.href is string && data.href.size() <= 2048
+        && (data.href == '' || data.href.matches('https://[^/ ?#@]+[.][^/ ?#@]+.*'))
+        && data.imageData is string && data.imageData.size() <= 450000
+        && data.imageData.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+');
+    }
+    match /labEntries/{postId} {
+      allow read: if true;
+      allow create: if validLabPost(request.resource.data);
+      allow update: if false;
+      allow delete: if isOwner();
+    }
     match /boardEntries/{postId} {
       allow read: if true;
       allow create: if validBoardPost(request.resource.data);
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isOwner();
     }
     match /photoEntries/{postId} {
       allow read: if true;
       allow create: if validPhotoPost(request.resource.data);
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isOwner();
     }
 
     match /counters/site {

@@ -52,15 +52,7 @@ export type BoardPost = {
   preview?: { src: string; alt: string };
 };
 
-export const boardPosts: BoardPost[] = [
-  {
-    "id": "seongmo-portal",
-    "category": "앱",
-    "title": "성모찹",
-    "date": "2026.09.30",
-    "href": "https://seongmohs.my.canva.site/portal"
-  }
-];
+export const boardPosts: BoardPost[] = [];
 
 /* 사진첩 탭입니다. */
 export type PhotoItem = {
@@ -69,33 +61,7 @@ export type PhotoItem = {
   src: string;
 };
 
-export const photos: PhotoItem[] = [
-  {
-    "id": "stickers-1",
-    "name": "학교 생활 캐릭터 모음 1",
-    "src": "/assets/minho/gallery-1.png"
-  },
-  {
-    "id": "stickers-2",
-    "name": "학교 생활 캐릭터 모음 2",
-    "src": "/assets/minho/gallery-2.png"
-  },
-  {
-    "id": "stickers-3",
-    "name": "학교 생활 캐릭터 모음 3",
-    "src": "/assets/minho/gallery-3.png"
-  },
-  {
-    "id": "stickers-4",
-    "name": "학교 생활 캐릭터 모음 4",
-    "src": "/assets/minho/gallery-4.png"
-  },
-  {
-    "id": "stickers-5",
-    "name": "학교 생활 캐릭터 모음 5",
-    "src": "/assets/minho/gallery-5.png"
-  }
-];
+export const photos: PhotoItem[] = [];
 
 /* 왼쪽 아래 파도타기 목록입니다.
    고정 규칙: 첫 번째 항목은 반드시 "도름스 커뮤니티 나의 활동" 링크입니다. 지우지 마세요. */

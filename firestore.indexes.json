@@ -15,6 +15,16 @@
       "collectionGroup": "boardEntries",
       "fieldPath": "text",
       "indexes": []
+    },
+    {
+      "collectionGroup": "labEntries",
+      "fieldPath": "imageData",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "labEntries",
+      "fieldPath": "text",
+      "indexes": []
     }
   ]
 }

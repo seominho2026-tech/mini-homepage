@@ -1219,3 +1219,18 @@ body.lt-intro-open {
   .cy-write-toolbar { align-items:flex-start; }
   .cy-write-toolbar button { flex-shrink:0; }
 }
+
+/* Lab entries keep a compact thumbnail beside their title and description. */
+.cy-lab-post { display:flex; align-items:flex-start; gap:14px; }
+.cy-lab-thumbnail { width:96px; height:96px; flex:0 0 96px; padding:5px; border:1px solid #DED6E9; border-radius:5px; background:#fff; }
+.cy-lab-thumbnail img { width:100%; height:100%; object-fit:contain; }
+.cy-post-content { min-width:0; flex:1; }
+.cy-post-content h3 a { color:inherit; text-decoration:none; }
+.cy-post-content h3 a:hover { text-decoration:underline; }
+.cy-delete-control { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:8px; font-size:11px; }
+.cy-delete-button, .cy-delete-confirm { cursor:pointer; border:1px solid #D5C9EB; border-radius:4px; padding:6px 9px; background:#fff; color:#716584; font:inherit; }
+.cy-delete-confirm { color:#9E2946; border-color:#D8A5B2; }
+.cy-delete-control button:disabled { opacity:.6; cursor:wait; }
+.cy-empty-posts { padding:24px 12px; border:1px dashed #D5C9EB; border-radius:6px; color:#716584; font-size:12px; text-align:center; }
+.cy-owner-note { flex-basis:100%; margin:0; }
+@media (max-width:480px) { .cy-lab-thumbnail { width:76px; height:76px; flex-basis:76px; } .cy-lab-post { gap:10px; } }

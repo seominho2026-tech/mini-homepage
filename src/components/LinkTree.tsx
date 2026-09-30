@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Spiral, type SpiralProps } from "@paper-design/shaders-react";
 import { asset } from "@/lib/asset";
+import DeletePostButton, { useWriter } from "@/components/DeletePostButton";
 import CommunityPosts from "@/components/CommunityPosts";
 import BgmPlayer, { type BgmHandle } from "@/components/BgmPlayer";
 import {
@@ -24,7 +25,7 @@ import {
 } from "@/config/linktree";
 import { theme } from "@/config/theme";
 
-const ALL_TABS = ["home", "profile", "story", "board", "guestbook", "photo"] as const;
+const ALL_TABS = ["home", "profile", "story", "board", "lab", "guestbook", "photo"] as const;
 type TabName = (typeof ALL_TABS)[number];
 
 /* 연재물이 하나도 없으면 탭 자체를 숨깁니다. */
@@ -39,6 +40,7 @@ const NAV_LABELS: Record<TabName, string> = {
   profile: "프로필",
   story: profile.storyLabel,
   board: profile.boardLabel,
+  lab: "실험실",
   guestbook: "방명록",
   photo: profile.photoLabel
 };
@@ -106,6 +108,7 @@ const TAB_TITLES: Record<TabName, string> = {
   profile: "프로필",
   story: profile.storyLabel,
   board: profile.boardLabel,
+  lab: "실험실",
   guestbook: "방명록",
   photo: profile.photoLabel
 };
@@ -264,6 +267,7 @@ function GuestbookForm() {
 
   return (
     <form className="cy-guestbook-form" onSubmit={submit}>
+      <p className="cy-write-note cy-owner-note">작성한 브라우저에서 내 글을 삭제할 수 있어요. 브라우저 데이터를 지우면 삭제 권한도 사라져요.</p>
       <input
         className="cy-gb-author"
         value={author}
@@ -294,6 +298,7 @@ const GUESTBOOK_FETCH_LIMIT = 30;
 const GUESTBOOK_PAGE_SIZE = 5;
 
 function GuestbookList({ writingControls = false }: { writingControls?: boolean }) {
+  const uid = useWriter();
   const [writing, setWriting] = useState(false);
   const [fetchLimit, setFetchLimit] = useState(GUESTBOOK_FETCH_LIMIT);
   /* Firestore 가 설정되어 있으면 실시간 목록을, 아니면 linktree.ts 의 예시를 보여줍니다. */
@@ -309,7 +314,7 @@ function GuestbookList({ writingControls = false }: { writingControls?: boolean 
   const live = isGuestbookEnabled && !failed;
   const entries = live && remote
     ? remote.map(e => ({ key: e.id, ...e }))
-    : guestbook.map(e => ({ key: String(e.id), ...e }));
+    : guestbook.map(e => ({ key: String(e.id), ownerId: undefined, ...e }));
 
   const pageCount = Math.max(1, Math.ceil(entries.length / GUESTBOOK_PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
@@ -335,6 +340,7 @@ function GuestbookList({ writingControls = false }: { writingControls?: boolean 
               </span>
               <span className="cg-text">{c.text}</span>
               <span className="cg-date">({c.date})</span>
+              {live && uid && c.ownerId === uid && <DeletePostButton kind="guestbook" id={String(c.id)} />}
             </div>
           ))
         )}
@@ -485,6 +491,7 @@ export default function LinkTree() {
                 {activeTab === "profile" && <ProfileTab />}
                 {activeTab === "story" && <StoryTab />}
                 {activeTab === "board" && <BoardTab />}
+                {activeTab === "lab" && <CommunityPosts kind="lab" />}
                 {activeTab === "guestbook" && <GuestbookTab />}
                 {activeTab === "photo" && <PhotoTab />}
               </div>

@@ -2,9 +2,11 @@
    설정값은 빌드 시 NEXT_PUBLIC_FIREBASE_* 환경변수로 주입됩니다.
    Firebase 웹 설정값은 비밀키가 아니라 프로젝트 식별자이며, 배포된 JS 에 그대로 들어가는 것이
    정상적인 사용법입니다. 실제 접근 제어는 firestore.rules 가 담당합니다. */
+import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import {
   addDoc,
+  deleteDoc,
   collection,
   doc,
   getFirestore,
@@ -37,6 +39,7 @@ export type RemoteEntry = {
   author: string;
   text: string;
   date: string;
+  ownerId?: string;
 };
 
 let app: FirebaseApp | null = null;
@@ -49,6 +52,28 @@ function getDb() {
     db = getFirestore(app);
   }
   return db;
+}
+
+// Restore the browser's anonymous identity; create one only when writing.
+let signingIn: Promise<string> | null = null;
+export function subscribeWriter(onChange: (uid: string | null) => void) {
+  if (!getDb() || !app) return () => {};
+  return onAuthStateChanged(getAuth(app), user => onChange(user?.uid ?? null));
+}
+async function writerId() {
+  if (!getDb() || !app) throw new Error("저장 기능에 연결하지 못했어요.");
+  const auth = getAuth(app);
+  await auth.authStateReady();
+  if (auth.currentUser) return auth.currentUser.uid;
+  if (!signingIn) signingIn = signInAnonymously(auth).then(result => result.user.uid).finally(() => { signingIn = null; });
+  return signingIn;
+}
+export async function deleteOwnPost(kind: CommunityKind | "guestbook", id: string) {
+  const store = getDb();
+  if (!store || !app) throw new Error("저장 기능에 연결하지 못했어요.");
+  await getAuth(app).authStateReady();
+  if (!getAuth(app).currentUser) throw new Error("글을 작성한 브라우저에서 삭제해 주세요.");
+  await deleteDoc(doc(store, kind === "guestbook" ? "guestbook" : COMMUNITY_COLLECTIONS[kind], id));
 }
 
 function formatDate(value: unknown) {
@@ -124,7 +149,8 @@ export function subscribeGuestbook(
             id: doc.id,
             author: String(data.author ?? ""),
             text: String(data.text ?? ""),
-            date: formatDate(data.createdAt)
+            date: formatDate(data.createdAt),
+            ownerId: typeof data.ownerId === "string" ? data.ownerId : undefined
           };
         })
       );
@@ -147,6 +173,7 @@ export async function addGuestbookEntry(author: string, text: string) {
   /* approved 는 지금은 항상 true 입니다. 나중에 승인제로 바꾸려면
      이 값을 false 로 두고 firestore.rules 의 read 조건만 바꾸면 됩니다. */
   await addDoc(collection(store, "guestbook"), {
+    ownerId: await writerId(),
     author: trimmedAuthor,
     text: trimmedText,
     approved: true,
@@ -155,17 +182,18 @@ export async function addGuestbookEntry(author: string, text: string) {
 }
 
 export const COMMUNITY_LIMITS = { author: 20, title: 80, text: 3000, href: 2048, image: 450000 } as const;
-export type CommunityKind = "board" | "photo";
-export type CommunityPost = { id: string; author: string; title: string; text: string; date: string; href?: string; imageData?: string };
+export type CommunityKind = "board" | "photo" | "lab";
+export const COMMUNITY_COLLECTIONS = { board: "boardEntries", photo: "photoEntries", lab: "labEntries" } as const;
+export type CommunityPost = { ownerId?: string; id: string; author: string; title: string; text: string; date: string; href?: string; imageData?: string };
 export type NewCommunityPost = { author: string; title: string; text: string; href?: string; imageData?: string };
 
 export function subscribeCommunityPosts(kind: CommunityKind, count: number, onData: (posts: CommunityPost[]) => void, onError: (error: Error) => void) {
   const store = getDb();
   if (!store) { onError(new Error("저장 기능에 연결하지 못했습니다.")); return () => {}; }
-  return onSnapshot(query(collection(store, kind === "board" ? "boardEntries" : "photoEntries"), orderBy("createdAt", "desc"), fsLimit(count)), snapshot => {
+  return onSnapshot(query(collection(store, COMMUNITY_COLLECTIONS[kind]), orderBy("createdAt", "desc"), fsLimit(count)), snapshot => {
     onData(snapshot.docs.map(item => {
       const data = item.data();
-      return { id: item.id, author: String(data.author ?? ""), title: String(data.title ?? ""), text: String(data.text ?? ""), date: formatDate(data.createdAt), href: typeof data.href === "string" ? data.href : undefined, imageData: typeof data.imageData === "string" ? data.imageData : undefined };
+      return { ownerId: typeof data.ownerId === "string" ? data.ownerId : undefined, id: item.id, author: String(data.author ?? ""), title: String(data.title ?? ""), text: String(data.text ?? ""), date: formatDate(data.createdAt), href: typeof data.href === "string" ? data.href : undefined, imageData: typeof data.imageData === "string" ? data.imageData : undefined };
     }));
   }, onError);
 }
@@ -176,8 +204,8 @@ export async function addCommunityPost(kind: CommunityKind, input: NewCommunityP
   const author = input.author.trim(), title = input.title.trim(), text = input.text.trim();
   if (!author || !title) throw new Error("이름과 제목을 적어 주세요.");
   if (author.length > COMMUNITY_LIMITS.author || title.length > COMMUNITY_LIMITS.title || text.length > COMMUNITY_LIMITS.text) throw new Error("입력할 수 있는 글자 수를 넘었습니다.");
-  const base = { author, title, text, createdAt: serverTimestamp() };
-  if (kind === "board") {
+  const base = { author, title, text, ownerId: await writerId(), createdAt: serverTimestamp() };
+  if (kind !== "photo") {
     if (!text) throw new Error("내용을 적어 주세요.");
     const href = (input.href ?? "").trim();
     if (href) {
@@ -185,7 +213,10 @@ export async function addCommunityPost(kind: CommunityKind, input: NewCommunityP
       try { url = new URL(href); } catch { throw new Error("연결 주소를 확인해 주세요. https://로 시작해야 합니다."); }
       if (url.protocol !== "https:" || url.username || url.password || href.length > COMMUNITY_LIMITS.href) throw new Error("연결 주소는 https://로 시작하는 공개 주소만 사용할 수 있어요.");
     }
-    return (await addDoc(collection(store, "boardEntries"), { ...base, href })).id;
+    if (kind === "board") return (await addDoc(collection(store, "boardEntries"), { ...base, href })).id;
+    const imageData = input.imageData ?? "";
+    if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(imageData) || imageData.length > COMMUNITY_LIMITS.image) throw new Error("작은 그림을 선택해 주세요.");
+    return (await addDoc(collection(store, "labEntries"), { ...base, href, imageData })).id;
   }
   const imageData = input.imageData ?? "";
   if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(imageData) || imageData.length > COMMUNITY_LIMITS.image) throw new Error("사진을 다시 선택해 주세요.");
