@@ -6,7 +6,7 @@ export const profile = {
   catalogTitle: "학교 생활 Lab",
   catalogDescription: "학교 생활 Lab",
   /* 왼쪽 프로필 사진입니다. public/assets/ 안에 파일을 넣고 경로를 적으세요. */
-  photo: { src: "/assets/minho/profile.jpg", alt: "안경 쓴 민호 선생님 캐릭터" },
+  photo: { src: "/assets/minho/profile-graduation.png", alt: "안경 쓴 민호 선생님 캐릭터" },
   /* 홈 탭 위쪽 미니룸 이미지입니다. public/assets/ 안에 파일을 넣고 경로를 적으세요. */
   miniroom: { src: "/assets/minho/miniroom-v2.png", alt: "국어 선생님 캐릭터와 책, 고양이, AI 로봇이 함께하는 아늑한 미니룸" },
   /* 아래는 탭 이름표입니다. 나만의 이름으로 바꿔도 되고, 안 바꾸면 기본값 그대로 나옵니다. */
