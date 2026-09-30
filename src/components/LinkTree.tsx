@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Spiral, type SpiralProps } from "@paper-design/shaders-react";
 import { asset } from "@/lib/asset";
+import CommunityPosts from "@/components/CommunityPosts";
 import BgmPlayer, { type BgmHandle } from "@/components/BgmPlayer";
 import {
   GUESTBOOK_LIMITS,
@@ -15,17 +16,15 @@ import {
   type VisitCounts
 } from "@/lib/firebase";
 import {
-  boardPosts,
   episodes,
   guestbook,
-  photos,
   profile,
   profileSections,
   waveLinks
 } from "@/config/linktree";
 import { theme } from "@/config/theme";
 
-const ALL_TABS = ["home", "profile", "story", "board", "photo"] as const;
+const ALL_TABS = ["home", "profile", "story", "board", "guestbook", "photo"] as const;
 type TabName = (typeof ALL_TABS)[number];
 
 /* 연재물이 하나도 없으면 탭 자체를 숨깁니다. */
@@ -40,6 +39,7 @@ const NAV_LABELS: Record<TabName, string> = {
   profile: "프로필",
   story: profile.storyLabel,
   board: profile.boardLabel,
+  guestbook: "방명록",
   photo: profile.photoLabel
 };
 
@@ -106,6 +106,7 @@ const TAB_TITLES: Record<TabName, string> = {
   profile: "프로필",
   story: profile.storyLabel,
   board: profile.boardLabel,
+  guestbook: "방명록",
   photo: profile.photoLabel
 };
 
@@ -232,39 +233,10 @@ function StoryTab() {
   );
 }
 
-function BoardTab() {
-  return (
-    <div className="cy-content-box">
-      <SectionTitle title={profile.boardLabel} sub={profile.boardSubtitle} />
-      {boardPosts.length === 0 ? (
-        <div className="cy-empty-box">
-          {profile.boardEmptyText}
-        </div>
-      ) : (
-        <ul className="cy-board-list">
-          {boardPosts.map(post => (
-            <li key={post.id} className="cy-board-item">
-              <a className="cy-board-link" href={post.href} target="_blank" rel="noopener noreferrer">
-                {post.preview ? (
-                  <span className="cy-board-preview">
-                    <img src={asset(post.preview.src)} alt={post.preview.alt} loading="lazy" />
-                  </span>
-                ) : null}
-                <span className="cy-board-text">
-                  <span className="cy-board-head">
-                    <span className="cy-board-category">{post.category}</span>
-                    <span className="cy-board-title">{post.title}</span>
-                  </span>
-                  {post.summary ? <span className="cy-board-summary">{post.summary}</span> : null}
-                  <span className="cy-board-date">{post.date}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+function BoardTab() { return <CommunityPosts kind="board" />; }
+
+function GuestbookTab() {
+  return <div className="cy-content-box"><SectionTitle title="방명록" sub="누구나 남기는 인사" /><GuestbookList writingControls /></div>;
 }
 
 function GuestbookForm() {
@@ -321,7 +293,9 @@ function GuestbookForm() {
 const GUESTBOOK_FETCH_LIMIT = 30;
 const GUESTBOOK_PAGE_SIZE = 5;
 
-function GuestbookList() {
+function GuestbookList({ writingControls = false }: { writingControls?: boolean }) {
+  const [writing, setWriting] = useState(false);
+  const [fetchLimit, setFetchLimit] = useState(GUESTBOOK_FETCH_LIMIT);
   /* Firestore 가 설정되어 있으면 실시간 목록을, 아니면 linktree.ts 의 예시를 보여줍니다. */
   const [remote, setRemote] = useState<RemoteEntry[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -329,8 +303,8 @@ function GuestbookList() {
 
   useEffect(() => {
     if (!isGuestbookEnabled) return;
-    return subscribeGuestbook(GUESTBOOK_FETCH_LIMIT, setRemote, () => setFailed(true));
-  }, []);
+    return subscribeGuestbook(fetchLimit, entries => { setRemote(entries); setFailed(false); }, () => setFailed(true));
+  }, [fetchLimit]);
 
   const live = isGuestbookEnabled && !failed;
   const entries = live && remote
@@ -346,6 +320,8 @@ function GuestbookList() {
 
   return (
     <>
+      {writingControls && <div className="cy-write-toolbar"><span>로그인 없이 인사를 남길 수 있어요.</span><button type="button" className="cy-write-button" aria-expanded={writing} disabled={!isGuestbookEnabled} onClick={() => setWriting(!writing)}>글쓰기</button></div>}
+      {failed && <p role="alert" className="cy-write-error">방명록을 불러오지 못했어요. 새로고침해 주세요.</p>}
       {live && remote === null ? <div className="cy-gb-loading">한줄평을 불러오는 중…</div> : null}
 
       <div className="cy-guestbook-list">
@@ -380,7 +356,8 @@ function GuestbookList() {
         </div>
       ) : null}
 
-      {live ? <GuestbookForm /> : null}
+      {remote?.length === fetchLimit && <button type="button" className="cy-cancel-button" onClick={() => setFetchLimit(n => n + GUESTBOOK_FETCH_LIMIT)}>이전 방명록 더 보기</button>}
+      {isGuestbookEnabled && (!writingControls || writing) ? <GuestbookForm /> : null}
     </>
   );
 }
@@ -412,22 +389,7 @@ function VisitCounter() {
   );
 }
 
-function PhotoTab() {
-  return (
-    <div className="cy-content-box">
-      <SectionTitle title={profile.photoLabel} sub={`${profile.photoSubtitlePrefix} ${photos.length}컷`} />
-      <ul className="cy-photo-grid">
-        {photos.map(photo => (
-          <li key={photo.id} className="cy-photo-item">
-            <div className="cy-photo-frame">
-              <img src={asset(photo.src)} alt={photo.name} loading="lazy" />
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+function PhotoTab() { return <CommunityPosts kind="photo" />; }
 
 export default function LinkTree() {
   const [activeTab, setActiveTab] = useState<TabName>("home");
@@ -523,6 +485,7 @@ export default function LinkTree() {
                 {activeTab === "profile" && <ProfileTab />}
                 {activeTab === "story" && <StoryTab />}
                 {activeTab === "board" && <BoardTab />}
+                {activeTab === "guestbook" && <GuestbookTab />}
                 {activeTab === "photo" && <PhotoTab />}
               </div>
             </div>

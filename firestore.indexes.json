@@ -1,4 +1,20 @@
 {
   "indexes": [],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "photoEntries",
+      "fieldPath": "imageData",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "photoEntries",
+      "fieldPath": "text",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "boardEntries",
+      "fieldPath": "text",
+      "indexes": []
+    }
+  ]
 }

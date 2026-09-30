@@ -1186,3 +1186,36 @@ body.lt-intro-open {
     min-width: 52px;
   }
 }
+
+/* Public writing controls share the lavender mini-homepage palette. */
+.cy-write-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:12px 0 16px; font-size:12px; color:#716584; }
+.cy-write-button, .cy-cancel-button { border:1px solid #7C6FA6; border-radius:5px; padding:9px 15px; font:inherit; cursor:pointer; min-height:40px; }
+.cy-write-button { background:#7C6FA6; color:white; }
+.cy-cancel-button { background:white; color:#645486; }
+.cy-write-button:disabled, .cy-cancel-button:disabled { opacity:.55; cursor:wait; }
+.cy-write-form { padding:16px; margin-bottom:18px; background:#F7F5FB; border:1px solid #D5C9EB; border-radius:7px; }
+.cy-write-form h3 { margin:0 0 8px; color:#4A4468; font-size:15px; }
+.cy-write-form fieldset { border:0; padding:0; margin:0; min-width:0; }
+.cy-write-form label { display:grid; gap:6px; margin-top:12px; font-size:12px; font-weight:bold; }
+.cy-write-form input, .cy-write-form textarea { width:100%; min-width:0; border:1px solid #CFC5DD; border-radius:4px; padding:10px; font:inherit; font-weight:normal; background:white; color:#333; }
+.cy-write-form textarea { resize:vertical; min-height:100px; }
+.cy-write-form :is(input,textarea):focus { outline:2px solid #B8AED9; outline-offset:1px; }
+.cy-write-note { color:#716584; font-size:11px; font-weight:normal; line-height:1.7; }
+.cy-upload-preview { display:block; max-width:100%; max-height:260px; margin:12px auto; object-fit:contain; }
+.cy-write-actions { display:flex; gap:8px; margin-top:16px; }
+.cy-write-error { color:#a12839; font-size:12px; line-height:1.6; }
+.cy-write-success { color:#645486; padding:10px; background:#EFEBF7; font-size:12px; }
+.cy-public-post { padding:16px 0; border-bottom:1px dashed #D5C9EB; overflow-wrap:anywhere; }
+.cy-public-post h3 { font-size:15px; color:#4A4468; margin:0 0 6px; }
+.cy-post-meta { color:#82758F; font-size:11px; margin:0 0 12px; }
+.cy-post-body { white-space:pre-wrap; line-height:1.8; font-size:13px; }
+.cy-post-link { display:inline-block; color:#7C6FA6; font-size:12px; margin:8px 0; }
+.cy-post-photo { display:block; max-width:100%; width:auto; max-height:640px; margin:auto; border-radius:4px; }
+.cy-load-more { margin:14px 0; }
+.cy-gb-pagination { flex-wrap:wrap; }
+@media (max-width:600px) {
+  .cy-write-form { padding:12px; }
+  .cy-write-form input, .cy-write-form textarea { font-size:16px; }
+  .cy-write-toolbar { align-items:flex-start; }
+  .cy-write-toolbar button { flex-shrink:0; }
+}

@@ -153,3 +153,41 @@ export async function addGuestbookEntry(author: string, text: string) {
     createdAt: serverTimestamp()
   });
 }
+
+export const COMMUNITY_LIMITS = { author: 20, title: 80, text: 3000, href: 2048, image: 450000 } as const;
+export type CommunityKind = "board" | "photo";
+export type CommunityPost = { id: string; author: string; title: string; text: string; date: string; href?: string; imageData?: string };
+export type NewCommunityPost = { author: string; title: string; text: string; href?: string; imageData?: string };
+
+export function subscribeCommunityPosts(kind: CommunityKind, count: number, onData: (posts: CommunityPost[]) => void, onError: (error: Error) => void) {
+  const store = getDb();
+  if (!store) { onError(new Error("저장 기능에 연결하지 못했습니다.")); return () => {}; }
+  return onSnapshot(query(collection(store, kind === "board" ? "boardEntries" : "photoEntries"), orderBy("createdAt", "desc"), fsLimit(count)), snapshot => {
+    onData(snapshot.docs.map(item => {
+      const data = item.data();
+      return { id: item.id, author: String(data.author ?? ""), title: String(data.title ?? ""), text: String(data.text ?? ""), date: formatDate(data.createdAt), href: typeof data.href === "string" ? data.href : undefined, imageData: typeof data.imageData === "string" ? data.imageData : undefined };
+    }));
+  }, onError);
+}
+
+export async function addCommunityPost(kind: CommunityKind, input: NewCommunityPost) {
+  const store = getDb();
+  if (!store) throw new Error("저장 기능에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.");
+  const author = input.author.trim(), title = input.title.trim(), text = input.text.trim();
+  if (!author || !title) throw new Error("이름과 제목을 적어 주세요.");
+  if (author.length > COMMUNITY_LIMITS.author || title.length > COMMUNITY_LIMITS.title || text.length > COMMUNITY_LIMITS.text) throw new Error("입력할 수 있는 글자 수를 넘었습니다.");
+  const base = { author, title, text, createdAt: serverTimestamp() };
+  if (kind === "board") {
+    if (!text) throw new Error("내용을 적어 주세요.");
+    const href = (input.href ?? "").trim();
+    if (href) {
+      let url: URL;
+      try { url = new URL(href); } catch { throw new Error("연결 주소를 확인해 주세요. https://로 시작해야 합니다."); }
+      if (url.protocol !== "https:" || url.username || url.password || href.length > COMMUNITY_LIMITS.href) throw new Error("연결 주소는 https://로 시작하는 공개 주소만 사용할 수 있어요.");
+    }
+    return (await addDoc(collection(store, "boardEntries"), { ...base, href })).id;
+  }
+  const imageData = input.imageData ?? "";
+  if (!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(imageData) || imageData.length > COMMUNITY_LIMITS.image) throw new Error("사진을 다시 선택해 주세요.");
+  return (await addDoc(collection(store, "photoEntries"), { ...base, imageData })).id;
+}

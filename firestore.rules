@@ -37,6 +37,42 @@ service cloud.firestore {
 
        day 문자열이 진짜 오늘인지는 규칙에서 확인하지 못합니다.
        조작하더라도 today 가 1로 리셋되는 정도이고 total 은 영향받지 않습니다. */
+
+    // Public posts: author/title/text plus a link or a compressed JPEG.
+    // Existing posts are immutable to visitors, including their author.
+    function validPostBase(data) {
+      return data.author is string && data.author.size() >= 1 && data.author.size() <= 20
+        && data.author.matches('.*[^ ].*')
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 80
+        && data.title.matches('.*[^ ].*')
+        && data.text is string && data.text.size() <= 3000
+        && data.createdAt == request.time;
+    }
+    function validBoardPost(data) {
+      return data.keys().hasAll(['author', 'title', 'text', 'href', 'createdAt'])
+        && data.keys().hasOnly(['author', 'title', 'text', 'href', 'createdAt'])
+        && validPostBase(data) && data.text.size() >= 1
+        && data.href is string && data.href.size() <= 2048
+        && (data.href == '' || data.href.matches('https://[^/ ?#@]+[.][^/ ?#@]+.*'));
+    }
+    function validPhotoPost(data) {
+      return data.keys().hasAll(['author', 'title', 'text', 'imageData', 'createdAt'])
+        && data.keys().hasOnly(['author', 'title', 'text', 'imageData', 'createdAt'])
+        && validPostBase(data)
+        && data.imageData is string && data.imageData.size() <= 450000
+        && data.imageData.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+');
+    }
+    match /boardEntries/{postId} {
+      allow read: if true;
+      allow create: if validBoardPost(request.resource.data);
+      allow update, delete: if false;
+    }
+    match /photoEntries/{postId} {
+      allow read: if true;
+      allow create: if validPhotoPost(request.resource.data);
+      allow update, delete: if false;
+    }
+
     match /counters/site {
       allow read: if true;
 
