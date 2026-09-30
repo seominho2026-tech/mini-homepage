@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: profile.title,
     description: profile.introDescription,
-    images: ["/assets/dorms-community.png"]
+    images: [`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/assets/minho/school.png`]
   }
 };
 

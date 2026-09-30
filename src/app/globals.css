@@ -32,8 +32,8 @@ body.lt-intro-open {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(circle at 50% 45%, rgba(244,247,244,0.06), rgba(47,74,56,0.08) 38%, rgba(47,74,56,0.18) 100%),
-    linear-gradient(180deg, rgba(47,74,56,0.08), rgba(47,74,56,0.02) 46%, rgba(47,74,56,0.14));
+    radial-gradient(circle at 50% 45%, rgba(247,245,251,0.06), rgba(74,68,104,0.08) 38%, rgba(74,68,104,0.18) 100%),
+    linear-gradient(180deg, rgba(74,68,104,0.08), rgba(74,68,104,0.02) 46%, rgba(74,68,104,0.14));
 }
 
 .lt-intro-spiral {
@@ -66,7 +66,7 @@ body.lt-intro-open {
   font-weight: 800;
   line-height: 1.05;
   color: var(--ink);
-  text-shadow: 0 3px 22px rgba(244,247,244,0.86), 0 1px 1px rgba(244,247,244,0.95);
+  text-shadow: 0 3px 22px rgba(247,245,251,0.86), 0 1px 1px rgba(247,245,251,0.95);
 }
 
 .lt-intro-copy {
@@ -76,7 +76,7 @@ body.lt-intro-open {
   font-size: clamp(1.08rem, 2.2vw, 1.6rem);
   font-weight: 800;
   line-height: 1.48;
-  text-shadow: 0 3px 22px rgba(244,247,244,0.86), 0 1px 1px rgba(244,247,244,0.95);
+  text-shadow: 0 3px 22px rgba(247,245,251,0.86), 0 1px 1px rgba(247,245,251,0.95);
 }
 
 .lt-intro-cta {
@@ -87,7 +87,7 @@ body.lt-intro-open {
   min-height: 52px;
   margin-top: 1.15rem;
   padding: 0 1.45rem;
-  border: 1px solid rgba(244,247,244,0.62);
+  border: 1px solid rgba(247,245,251,0.62);
   border-radius: 999px;
   background: var(--brown);
   color: var(--cream);
@@ -95,7 +95,7 @@ body.lt-intro-open {
   font-family: var(--body);
   font-size: 1rem;
   font-weight: 900;
-  box-shadow: 0 16px 32px -14px rgba(47,74,56,0.72), 0 0 0 5px rgba(208,231,210,0.28);
+  box-shadow: 0 16px 32px -14px rgba(74,68,104,0.72), 0 0 0 5px rgba(232,223,245,0.28);
 }
 
 @keyframes lt-intro-card {
@@ -123,7 +123,7 @@ body.lt-intro-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom, #d4f0d4, #b2dbb2 50%, #8ac08a); /* 초록 파스텔 톤 */
+  background: linear-gradient(to bottom, #E8DFF5, #D5C9EB 50%, #9B7FD4); /* 연보라 파스텔 톤 */
   padding: 2rem;
 }
 
@@ -182,7 +182,7 @@ body.lt-intro-open {
   display: flex;
   width: 100%;
   height: 100%;
-  border: 2px dashed #9cbba6;
+  border: 2px dashed #B8AED9;
   border-radius: 8px;
   background: white;
   position: relative;
@@ -213,7 +213,7 @@ body.lt-intro-open {
   color: #888;
 }
 
-.text-orange { color: #ff6600; font-weight: bold; }
+.text-orange { color: #7C6FA6; font-weight: bold; }
 .text-black { color: #333; font-weight: bold; }
 
 .cy-left-content {
@@ -246,7 +246,7 @@ body.lt-intro-open {
   height: 100%;
   object-fit: contain;
   padding: 6px;
-  background: #f4f7f4;
+  background: #F7F5FB;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -330,8 +330,8 @@ body.lt-intro-open {
   text-align: left;
   cursor: pointer;
 }
-.cy-bgm-track:hover { color: #ff6600; }
-.cy-bgm-track.is-current { color: #ff6600; font-weight: bold; }
+.cy-bgm-track:hover { color: #7C6FA6; }
+.cy-bgm-track.is-current { color: #7C6FA6; font-weight: bold; }
 
 .cy-bgm-mark {
   width: 9px;
@@ -359,7 +359,7 @@ body.lt-intro-open {
   font-size: 0.62rem;
   color: #aaa;
 }
-.cy-bgm-track.is-current .cy-bgm-time { color: #ffa366; }
+.cy-bgm-track.is-current .cy-bgm-time { color: #9C93B8; }
 
 .cy-bgm-controls {
   display: flex;
@@ -382,15 +382,15 @@ body.lt-intro-open {
   cursor: pointer;
 }
 .cy-bgm-controls button:hover {
-  border-color: #ff6600;
-  color: #ff6600;
+  border-color: #7C6FA6;
+  color: #7C6FA6;
 }
 
 .cy-bgm-controls input[type="range"] {
   flex: 1;
   min-width: 0;
   height: 12px;
-  accent-color: #ff6600;
+  accent-color: #7C6FA6;
   cursor: pointer;
 }
 
@@ -406,7 +406,7 @@ body.lt-intro-open {
 .cy-bgm-note {
   margin-top: 4px;
   font-size: 0.65rem;
-  color: #ff6600;
+  color: #7C6FA6;
 }
 
 /* 유튜브 iframe 자리입니다. 소리만 쓰기 때문에 화면 밖으로 보냅니다.
@@ -469,7 +469,7 @@ body.lt-intro-open {
 .cy-title {
   font-size: 1.1rem;
   font-weight: 900;
-  color: #4CA771; /* 파스텔 초록 포인트 */
+  color: #7C6FA6; /* 연보라 포인트 */
 }
 
 .cy-url {
@@ -525,12 +525,12 @@ body.lt-intro-open {
 }
 .cy-news-list a:hover {
   text-decoration: underline;
-  color: #ff6600;
+  color: #7C6FA6;
 }
 
 /* 미니룸 박스 */
 .cy-miniroom-inner {
-  background: #f4f7f4; /* 옅은 민트색 배경 */
+  background: #F7F5FB; /* 옅은 연보라 배경 */
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   display: flex;
@@ -545,7 +545,7 @@ body.lt-intro-open {
 }
 .cy-miniroom-welcome {
   font-size: 0.9rem;
-  color: #547A60;
+  color: #7C6FA6;
   font-weight: bold;
 }
 
@@ -571,7 +571,7 @@ body.lt-intro-open {
 .cy-profile-list-heading {
   font-size: 0.8rem;
   font-weight: bold;
-  color: #2F4A38;
+  color: #4A4468;
   margin-bottom: 6px;
 }
 .cy-profile-list {
@@ -594,7 +594,7 @@ body.lt-intro-open {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #9CBBA6;
+  background: #B8AED9;
 }
 
 .cy-contact-list {
@@ -612,11 +612,11 @@ body.lt-intro-open {
   margin-right: 6px;
 }
 .cy-contact-list a {
-  color: #547A60;
+  color: #7C6FA6;
   text-decoration: none;
 }
 .cy-contact-list a:hover {
-  color: #ff6600;
+  color: #7C6FA6;
   text-decoration: underline;
 }
 
@@ -644,7 +644,7 @@ body.lt-intro-open {
 .cy-episode-thumb {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #f4f7f4;
+  background: #F7F5FB;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
@@ -661,7 +661,7 @@ body.lt-intro-open {
   transform: scale(1.05);
 }
 .cy-episode-card:hover .cy-episode-label {
-  color: #ff6600;
+  color: #7C6FA6;
 }
 .cy-episode-label {
   font-size: 0.78rem;
@@ -677,9 +677,9 @@ body.lt-intro-open {
 
 /* 회차 보기 */
 .cy-back-btn {
-  background: #9CBBA6;
+  background: #B8AED9;
   color: #fff;
-  border: 1px solid #779683;
+  border: 1px solid #7C6FA6;
   border-radius: 4px;
   padding: 5px 12px;
   font-size: 0.75rem;
@@ -688,7 +688,7 @@ body.lt-intro-open {
   margin-bottom: 12px;
 }
 .cy-back-btn:hover {
-  background: #8ac08a;
+  background: #9B7FD4;
 }
 .cy-cut-list {
   display: flex;
@@ -724,8 +724,8 @@ body.lt-intro-open {
   font-family: "Tahoma", sans-serif;
   font-size: 0.7rem;
   font-weight: bold;
-  color: #547A60;
-  background: #eef4ef;
+  color: #7C6FA6;
+  background: #EFEBF7;
   border-radius: 3px;
   padding: 3px 6px;
   flex-shrink: 0;
@@ -740,7 +740,7 @@ body.lt-intro-open {
   text-decoration: none;
 }
 .cy-story-title a:hover {
-  color: #ff6600;
+  color: #7C6FA6;
   text-decoration: underline;
 }
 .cy-story-summary {
@@ -799,7 +799,7 @@ body.lt-intro-open {
 .cy-board-category {
   font-size: 0.68rem;
   color: #fff;
-  background: #9CBBA6;
+  background: #B8AED9;
   border-radius: 3px;
   padding: 2px 6px;
   flex-shrink: 0;
@@ -808,7 +808,7 @@ body.lt-intro-open {
   font-weight: bold;
 }
 .cy-board-link:hover .cy-board-title {
-  color: #ff6600;
+  color: #7C6FA6;
   text-decoration: underline;
 }
 .cy-board-summary {
@@ -878,7 +878,7 @@ body.lt-intro-open {
   border-bottom: 1px dashed #eee;
   padding-bottom: 5px;
 }
-.cg-author { font-weight: bold; color: #2F4A38; }
+.cg-author { font-weight: bold; color: #4A4468; }
 .cg-colon { color: #888; margin: 0 4px; }
 .cg-text { color: #444; }
 .cg-date { font-family: "Tahoma"; font-size: 0.65rem; color: #999; margin-left: 5px; }
@@ -903,13 +903,13 @@ body.lt-intro-open {
 }
 
 .cy-gb-page:hover {
-  border-color: #9CBBA6;
-  color: #547A60;
+  border-color: #B8AED9;
+  color: #7C6FA6;
 }
 
 .cy-gb-page.is-active {
-  background: #9CBBA6;
-  border-color: #779683;
+  background: #B8AED9;
+  border-color: #7C6FA6;
   color: #fff;
 }
 
@@ -953,7 +953,7 @@ body.lt-intro-open {
 .cy-gb-author:focus,
 .cy-gb-text:focus {
   outline: none;
-  border-color: #9CBBA6;
+  border-color: #B8AED9;
 }
 
 .cy-gb-submit {
@@ -962,15 +962,15 @@ body.lt-intro-open {
   font-size: 0.75rem;
   font-weight: bold;
   padding: 5px 12px;
-  border: 1px solid #779683;
+  border: 1px solid #7C6FA6;
   border-radius: 3px;
-  background: #9CBBA6;
+  background: #B8AED9;
   color: #fff;
   cursor: pointer;
 }
 
 .cy-gb-submit:hover:not(:disabled) {
-  background: #8ac08a;
+  background: #9B7FD4;
 }
 
 .cy-gb-submit:disabled {
@@ -982,7 +982,7 @@ body.lt-intro-open {
 .cy-gb-message {
   flex-basis: 100%;
   font-size: 0.72rem;
-  color: #547A60;
+  color: #7C6FA6;
 }
 
 .cy-gb-message.is-error {
@@ -1003,9 +1003,9 @@ body.lt-intro-open {
 }
 
 .cy-tab-btn {
-  background: #9CBBA6; /* 기본 탭 초록색 */
+  background: #B8AED9; /* 기본 탭 연보라색 */
   color: white;
-  border: 1px solid #779683;
+  border: 1px solid #7C6FA6;
   border-left: none; /* 책에 붙은 느낌 */
   border-radius: 0 6px 6px 0;
   padding: 6px 4px;
@@ -1030,13 +1030,13 @@ body.lt-intro-open {
 
 .cy-tab-btn:hover {
   width: 68px;
-  background: #8ac08a;
+  background: #9B7FD4;
 }
 
 .cy-tab-btn.active {
   background: white;
   color: #333;
-  border-color: #9cbba6;
+  border-color: #B8AED9;
   width: 72px;
   font-weight: bold;
   z-index: 10;
@@ -1142,7 +1142,7 @@ body.lt-intro-open {
     min-width: 58px;
     min-height: 34px;
     padding: 6px 8px;
-    border: 1px solid #779683;
+    border: 1px solid #7C6FA6;
     border-radius: 6px 6px 0 0;
   }
 

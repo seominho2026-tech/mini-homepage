@@ -79,3 +79,12 @@ npm run build
 1. 변경사항을 커밋하고 사용자의 새 저장소로 푸시하세요. `main`에 푸시하면 `.github/workflows/deploy.yml`이 자동으로 GitHub Pages에 배포합니다.
 2. GitHub Pages가 아직 활성화되지 않았다면 `gh api repos/{owner}/{repo}/pages -X POST -f build_type=workflow`로 켜세요(이미 켜져 있으면 오류가 나도 무시해도 됩니다).
 3. 배포가 끝날 때까지 기다렸다가(`gh run watch`, 또는 잠시 후 `gh api repos/{owner}/{repo}/pages`로 상태 확인), 완료되면 대화의 마지막 메시지로 실제 배포된 미니홈피 주소를 사용자에게 보여주며 끝내세요. 예: "완성됐어요! 내 미니홈피 주소: https://<아이디>.github.io/<저장소이름>/"
+
+## 이 프로젝트의 실제 대상
+
+- GitHub: https://github.com/seominho2026-tech/mini-homepage
+- 공개 주소: https://seominho2026-tech.github.io/mini-homepage/
+- Firebase project ID: minho-school-lab-20260930
+- 데이터 저장: 이 미니홈피 전용 Firestore. 다른 프로젝트를 수정하지 않는다.
+- 배포: 저장소 안내에 따른 GitHub Pages. Vercel과 Supabase는 사용하지 않는다.
+- .env.local, .cache, 인증 파일과 비밀값은 Git에 넣지 않는다.

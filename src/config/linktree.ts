@@ -1,14 +1,14 @@
 export const profile = {
-  teacherName: "",
-  title: "나의 링크트리",
-  introTitle: "나의 링크트리",
-  introDescription: "",
-  catalogTitle: "게시판",
-  catalogDescription: "",
+  teacherName: "민호 선생님",
+  title: "민호 선생님! 학교 생활 Lab",
+  introTitle: "민호 선생님! 학교 생활 Lab",
+  introDescription: "배움과 즐거움이 함께하는 민호쌤의 학교 생활 연구소",
+  catalogTitle: "학교 생활 Lab",
+  catalogDescription: "학교 생활 Lab",
   /* 왼쪽 프로필 사진입니다. public/assets/ 안에 파일을 넣고 경로를 적으세요. */
-  photo: { src: "", alt: "" },
+  photo: { src: "/assets/minho/profile.jpg", alt: "안경 쓴 민호 선생님 캐릭터" },
   /* 홈 탭 위쪽 미니룸 이미지입니다. public/assets/ 안에 파일을 넣고 경로를 적으세요. */
-  miniroom: { src: "", alt: "" },
+  miniroom: { src: "/assets/minho/school.png", alt: "대전성모여자고등학교 전경" },
   /* 아래는 탭 이름표입니다. 나만의 이름으로 바꿔도 되고, 안 바꾸면 기본값 그대로 나옵니다. */
   storyLabel: "연재물",
   boardLabel: "게시판",
@@ -17,7 +17,7 @@ export const profile = {
   photoLabel: "사진첩",
   photoSubtitlePrefix: "사진",
   /* 오른쪽 위, 옛날 싸이월드 주소창을 흉내 낸 문구입니다. */
-  displayUrl: ""
+  displayUrl: "seominho2026-tech.github.io/mini-homepage"
 };
 
 /* 프로필 탭에 들어가는 소개 글입니다. 문구만 바꿔서 쓰세요. */
@@ -52,7 +52,15 @@ export type BoardPost = {
   preview?: { src: string; alt: string };
 };
 
-export const boardPosts: BoardPost[] = [];
+export const boardPosts: BoardPost[] = [
+  {
+    "id": "seongmo-portal",
+    "category": "앱",
+    "title": "성모찹",
+    "date": "2026.09.30",
+    "href": "https://seongmohs.my.canva.site/portal"
+  }
+];
 
 /* 사진첩 탭입니다. */
 export type PhotoItem = {
@@ -61,7 +69,33 @@ export type PhotoItem = {
   src: string;
 };
 
-export const photos: PhotoItem[] = [];
+export const photos: PhotoItem[] = [
+  {
+    "id": "stickers-1",
+    "name": "학교 생활 캐릭터 모음 1",
+    "src": "/assets/minho/gallery-1.png"
+  },
+  {
+    "id": "stickers-2",
+    "name": "학교 생활 캐릭터 모음 2",
+    "src": "/assets/minho/gallery-2.png"
+  },
+  {
+    "id": "stickers-3",
+    "name": "학교 생활 캐릭터 모음 3",
+    "src": "/assets/minho/gallery-3.png"
+  },
+  {
+    "id": "stickers-4",
+    "name": "학교 생활 캐릭터 모음 4",
+    "src": "/assets/minho/gallery-4.png"
+  },
+  {
+    "id": "stickers-5",
+    "name": "학교 생활 캐릭터 모음 5",
+    "src": "/assets/minho/gallery-5.png"
+  }
+];
 
 /* 왼쪽 아래 파도타기 목록입니다.
    고정 규칙: 첫 번째 항목은 반드시 "도름스 커뮤니티 나의 활동" 링크입니다. 지우지 마세요. */
@@ -72,7 +106,8 @@ export type WaveLink = {
 };
 
 export const waveLinks: WaveLink[] = [
-  { id: "dorms-activity", label: "도름스 커뮤니티 나의 활동", href: "" }
+  { id: "dorms-activity", label: "도름스 커뮤니티 나의 활동", href: "https://dorms.school/u/7cb75ce4-66c4-4409-a2e0-d128d48f0188" },
+  { id: "meyo-lab", label: "미요앱 실험실", href: "https://pcallpang.github.io/meyo-lab/" }
 ];
 
 /* 미니홈피 BGM 입니다. 유튜브 영상을 음원으로 씁니다.
@@ -99,7 +134,36 @@ export function secondsAt(timestamp: string): number {
     .reduce((total, part) => total * 60 + part, 0);
 }
 
-export const bgmTracks: BgmTrack[] = [];
+export const bgmTracks: BgmTrack[] = [
+  {
+    "id": "bgm-1",
+    "title": "내 입술… 따뜻한 커피처럼",
+    "artist": "샵",
+    "videoId": "JloYeVxERmI",
+    "startAt": 0
+  },
+  {
+    "id": "bgm-2",
+    "title": "Y (Please Tell Me Why)",
+    "artist": "프리스타일",
+    "videoId": "DC13_hnbzCA",
+    "startAt": 0
+  },
+  {
+    "id": "bgm-3",
+    "title": "우산 (Feat. 윤하)",
+    "artist": "에픽하이",
+    "videoId": "Qr13kGXORrk",
+    "startAt": 0
+  },
+  {
+    "id": "bgm-4",
+    "title": "귀로",
+    "artist": "나얼",
+    "videoId": "0qaS_-gJlT0",
+    "startAt": 0
+  }
+];
 
 /* 홈 탭 아래쪽 한마디입니다. */
 export type GuestbookEntry = {
@@ -109,4 +173,17 @@ export type GuestbookEntry = {
   date: string;
 };
 
-export const guestbook: GuestbookEntry[] = [];
+export const guestbook: GuestbookEntry[] = [
+  {
+    "id": 1,
+    "author": "조한정",
+    "text": "사이월드 안써봤는데 신기한데요?",
+    "date": "2026.09.30"
+  },
+  {
+    "id": 2,
+    "author": "최형진",
+    "text": "레전드...!",
+    "date": "2026.09.30"
+  }
+];
