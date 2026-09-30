@@ -76,6 +76,29 @@ service cloud.firestore {
         && data.imageData is string && data.imageData.size() <= 450000
         && data.imageData.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+');
     }
+    function validSavedLink(data, video) {
+      let fields = video
+        ? ['author', 'title', 'text', 'href', 'imageData', 'createdAt', 'ownerId']
+        : ['author', 'title', 'text', 'href', 'createdAt', 'ownerId'];
+      return data.keys().hasAll(fields) && data.keys().hasOnly(fields)
+        && validPostBase(data) && data.text == ''
+        && data.href is string && data.href.size() <= 2048
+        && data.href.matches('https://[^/ ?#@]+[.][^/ ?#@]+.*')
+        && (!video || (data.imageData is string && data.imageData.size() <= 450000
+          && data.imageData.matches('data:image/jpeg;base64,[A-Za-z0-9+/=]+')));
+    }
+    match /bookmarkEntries/{postId} {
+      allow read: if true;
+      allow create: if validSavedLink(request.resource.data, false);
+      allow update: if false;
+      allow delete: if isOwner();
+    }
+    match /videoEntries/{postId} {
+      allow read: if true;
+      allow create: if validSavedLink(request.resource.data, true);
+      allow update: if false;
+      allow delete: if isOwner();
+    }
     match /labEntries/{postId} {
       allow read: if true;
       allow create: if validLabPost(request.resource.data);

@@ -25,7 +25,7 @@ import {
 } from "@/config/linktree";
 import { theme } from "@/config/theme";
 
-const ALL_TABS = ["home", "profile", "story", "board", "lab", "guestbook", "photo"] as const;
+const ALL_TABS = ["home", "profile", "story", "board", "lab", "bookmark", "video", "guestbook", "photo"] as const;
 type TabName = (typeof ALL_TABS)[number];
 
 /* 연재물이 하나도 없으면 탭 자체를 숨깁니다. */
@@ -41,6 +41,8 @@ const NAV_LABELS: Record<TabName, string> = {
   story: profile.storyLabel,
   board: profile.boardLabel,
   lab: "실험실",
+  bookmark: "즐겨찾기",
+  video: "동영상",
   guestbook: "방명록",
   photo: profile.photoLabel
 };
@@ -109,6 +111,8 @@ const TAB_TITLES: Record<TabName, string> = {
   story: profile.storyLabel,
   board: profile.boardLabel,
   lab: "실험실",
+  bookmark: "즐겨찾기",
+  video: "동영상",
   guestbook: "방명록",
   photo: profile.photoLabel
 };
@@ -491,7 +495,9 @@ export default function LinkTree() {
                 {activeTab === "profile" && <ProfileTab />}
                 {activeTab === "story" && <StoryTab />}
                 {activeTab === "board" && <BoardTab />}
-                {activeTab === "lab" && <CommunityPosts kind="lab" />}
+                {activeTab === "lab" && <CommunityPosts key="lab" kind="lab" />}
+                {activeTab === "bookmark" && <CommunityPosts key="bookmark" kind="bookmark" />}
+                {activeTab === "video" && <CommunityPosts key="video" kind="video" />}
                 {activeTab === "guestbook" && <GuestbookTab />}
                 {activeTab === "photo" && <PhotoTab />}
               </div>

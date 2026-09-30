@@ -25,6 +25,11 @@
       "collectionGroup": "labEntries",
       "fieldPath": "text",
       "indexes": []
+    },
+    {
+      "collectionGroup": "videoEntries",
+      "fieldPath": "imageData",
+      "indexes": []
     }
   ]
 }
